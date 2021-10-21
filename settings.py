@@ -39,3 +39,11 @@ ic(alchemy_db_path)
 host = os.environ.get('host') or config['Server']['host']
 protocol = os.environ.get('protocol') or config['Server']['protocol']
 
+
+# region commands
+START = 'start'
+CATALOG = 'Каталог'
+ADD_EVENT = 'Добавить событие'
+
+# endregion
+

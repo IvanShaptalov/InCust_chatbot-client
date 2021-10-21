@@ -1,8 +1,6 @@
 import pytest
 from icecream import ic
 
-# py.test -m call_data -v
-
 
 @pytest.mark.config
 def test_config_valid():

@@ -1,4 +1,7 @@
+from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher.filters.state import StatesGroup, State
+
+storage = MemoryStorage()
 
 
 class ClientForm(StatesGroup):
@@ -14,4 +17,3 @@ class Menu(StatesGroup):
     catalog = State()
     add_client = ClientForm()
     chat = State()
-
