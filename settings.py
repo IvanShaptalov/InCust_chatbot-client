@@ -38,12 +38,15 @@ alchemy_db_path = database_link()
 ic(alchemy_db_path)
 host = os.environ.get('host') or config['Server']['host']
 protocol = os.environ.get('protocol') or config['Server']['protocol']
-
-
+media_group_id = os.environ.get('media_group_id') or config['GroupChat']['media']
 # region commands
-START = 'start'
+START = '/start'
+MAIN_MENU = 'Главное меню'
 CATALOG = 'Каталог'
 ADD_EVENT = 'Добавить событие'
-
+SKIP = 'Оставить поле пустым'
 # endregion
+# validations
+date_format = '%Y-%m-%d'
+date_format_human = 'Год-месяц-день'
 
