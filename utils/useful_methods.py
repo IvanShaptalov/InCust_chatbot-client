@@ -4,13 +4,13 @@ from aiogram import types, Bot
 from aiogram.types import PhotoSize
 
 
-def get_full_user_name(message: types.Message):
+def get_full_user_name(message: types.Message) -> str:
     """get user fullname from message"""
     if message.from_user:
         pre_fn = message.from_user.first_name
         pre_ln = message.from_user.last_name
-        first_name = pre_fn if pre_fn else ''
-        last_name = pre_ln if pre_ln else ''
+        first_name = pre_fn if pre_fn else ' '
+        last_name = pre_ln if pre_ln else ' '
         return f'{first_name} {last_name}'
     else:
         return ''
@@ -38,3 +38,6 @@ def try_get_date_from_str(from_date, date_format):
         return date_from
 
 
+def user_in_chat(message):
+    # todonext create check user in chat
+    return False

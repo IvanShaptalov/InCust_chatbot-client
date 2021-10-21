@@ -125,7 +125,7 @@ async def handle_photo(message: types.Message, state: FSMContext):
 
 @dp.message_handler(content_types=['text'], state=EventForm.end_date)
 async def handle_end_date(message: types.Message, state: FSMContext):
-    return await views_add_event.handle_end_date(message, state)
+    return await views_add_event.handle_end_date(message, state, bot)
 
 
 # endregion add event

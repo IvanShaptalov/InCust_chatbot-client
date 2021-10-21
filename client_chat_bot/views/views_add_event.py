@@ -77,7 +77,7 @@ async def handle_photo(message: types.Message, state: FSMContext, bot: Bot):
     unique_id = useful_methods.retrieve_message_unique_id(message, bot)
     logging.info(unique_id)
     # solved save photo in group
-    result = await bot.send_photo(settings.media_group_id, photo=unique_id)
+    result = await bot.send_photo(settings.MEDIA_GROUP_ID, photo=unique_id)
     if result:
 
         statement = await states.EventForm.next()
@@ -94,7 +94,7 @@ async def handle_photo(message: types.Message, state: FSMContext, bot: Bot):
         await message.delete()
 
 
-async def handle_end_date(message: types.Message, state: FSMContext):
+async def handle_end_date(message: types.Message, state: FSMContext, bot: Bot):
     # solved validate data
 
     date = useful_methods.try_get_date_from_str(message.text, settings.date_format)
@@ -104,13 +104,18 @@ async def handle_end_date(message: types.Message, state: FSMContext):
     else:
         # date valid
         if message.text == settings.SKIP:
-            date = 'skip'
+            date = None
         statement = await state.get_state()
         if statement is None:
             return
         await state.update_data(end_date=date)
         logging.info(f'finish statement: {statement}')
-        await save_state_info(message, state)
+        event = await save_state_info(message, state)
+        if isinstance(event, db_util.Event):
+            await bot.send_photo(chat_id=event.event_owner_id,
+                                 photo=event.get_media(),
+                                 caption=f'{event.stringify()}\n{text_util.EVENT_CREATED}',
+                                 reply_markup=keyboard_snippets.go_to_main_menu())
         await state.finish()
 
 
@@ -124,6 +129,24 @@ async def save_state_info(message: types.Message, state: FSMContext):
         description = data['description']
         media = data['media']  # photo unique id
         end_date = data['end_date']
+
+        user = db_util.User()
+        user.chat_id = message.chat.id
+        user.user_fullname = useful_methods.get_full_user_name(message)
+        user.in_chat = useful_methods.user_in_chat(message)
+
+        event = db_util.Event()
+        event.ev_name = event_name
+        event.title = event_title
+        event.description = description
+        event.media = media
+        event.end_date = end_date
+        event.event_owner = user
+        event.event_owner_id = message.chat.id
+
+        event.save()
+
+        return event
 
 
 # endregion handle photo

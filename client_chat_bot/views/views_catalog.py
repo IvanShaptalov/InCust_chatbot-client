@@ -14,6 +14,7 @@ async def handle_catalog(message: types.Message, bot: Bot):
     ic('show catalog statement')
     await bot.send_message(message.chat.id,
                            text_util.CATALOG_OPENED)
+    # todonext create pagination, deletions and chat in events
 
 
 # endregion catalog

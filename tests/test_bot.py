@@ -6,7 +6,7 @@ from icecream import ic
 def test_config_valid():
     try:
         import settings
-        print(settings.protocol)
+        print(settings.PROTOCOl)
     except KeyError as e:
         assert False, "config valid failed"
 

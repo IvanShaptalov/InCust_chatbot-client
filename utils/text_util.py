@@ -1,4 +1,5 @@
 # region event creating
+import settings
 from utils import useful_methods
 # todo change emoji
 EVENT_CREATING_OPENED = f'Создание нового события:\nВведите имя'
@@ -18,10 +19,13 @@ PHOTO_SAVED = '✅, Фото успешно добавлено!\nВведите 
 PHOTO_NOT_SAVED = '✅, При обработке фото произошла ошибка!'
 
 DATE_INVALID = '❌ Вы ввели неправильно дату или дату окончания события правильный формат:\n'
+
+EVENT_CREATED = 'Вы создали событие\m' \
+                f'Для того, чтобы получать уведомления о сообщениях перейдите в \n{settings.SERVICE_BOT}\nи напишите /start'
 # endregion event creating
 
 # region catalog
-CATALOG_OPENED = f'Создание:\nВведите имя события'
+CATALOG_OPENED = f'Каталог'
 
 
 # endregion catalog

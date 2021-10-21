@@ -1,12 +1,13 @@
+import logging
 from typing import List
 from icecream import ic
-from sqlalchemy import Integer, Column, String, create_engine, BigInteger, DateTime, Boolean
+from sqlalchemy import Integer, Column, String, create_engine, BigInteger, DateTime, Boolean, Table, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 
 import settings
 
-path_alchemy_local = settings.alchemy_db_path
+path_alchemy_local = settings.ALCHEMY_DB_PATH
 # test database
 Base = declarative_base()
 
@@ -37,18 +38,26 @@ session = _get_session()
 
 
 # region tables
-
-
 class User(Base):
     __tablename__ = "user"
 
-    chat_id = Column('chat_id', Integer, unique=True, primary_key=True, index=True)
+    chat_id = Column('chat_id', BigInteger, unique=True, primary_key=True, index=True)
     user_fullname = Column('username', String, unique=False)
     in_chat = Column('in_chat', Boolean, unique=False, default=False)
-    events = relationship('Event', back_populates='event_owner')
+    event = relationship('Event', back_populates='event_owner')
 
-    def __repr__(self):
-        return '{}{}{}'.format(self.chat_id, self.statement, self.user_fullname)
+    def __str__(self):
+        return f'{self.user_fullname} {self.chat_id} in_chat:{self.in_chat}'
+
+    def save(self):
+        user = get_from_db_multiple_filter(User,
+                                           identifier_to_value=[User.chat_id == self.chat_id])
+        if user is None:
+            user = write_obj_to_table(table_class=User,
+                                      identifier_to_value=[User.chat_id == self.chat_id],
+                                      chat_id=self.chat_id,
+                                      user_fullname=self.user_fullname,
+                                      in_chat=self.in_chat)
 
 
 class Event(Base):
@@ -60,8 +69,30 @@ class Event(Base):
     title = Column('title', String, unique=False)
     description = Column('description', String, unique=False)
     media = Column('media', String, unique=False)
-    event_owner = relationship(User, back_populates="events")
+    event_owner_id = Column('event_owner_id', BigInteger, ForeignKey('user.chat_id'), unique=False)
+    event_owner = relationship(User, back_populates='event')
     end_date = Column('end_date', DateTime, unique=False, nullable=True)
+
+    def save(self):
+        self.event_owner.save()
+        write_obj_to_table(table_class=Event,
+                           ev_name=self.ev_name,
+                           title=self.title,
+                           description=self.description,
+                           media=self.media,
+                           end_date=self.end_date,
+                           event_owner_id=self.event_owner_id)
+        logging.info('event saved')
+
+    def stringify(self):
+        return f'{self.title}\n\n' \
+               f'{self.description}\n\n'
+
+    def get_media(self):
+        return self.media
+
+    def __str__(self):
+        return f'{self.ev_name} {self.title} {self.event_owner.user_fullname}'
 
     # endregion
 
@@ -101,13 +132,13 @@ def get_from_db_multiple_filter(table_class, identifier_to_value: list, get_type
 # region abstract write
 
 
-def write_obj_to_table(table_class, identifier=None, value=None, **column_name_to_value):
+def write_obj_to_table(table_class, identifier_to_value: List = None, **column_name_to_value):
     """column name to value must be exist in table class in columns"""
     # get obj
     with session:
         is_new = False
-        if identifier:
-            tab_obj = session.query(table_class).filter(identifier == value).first()
+        if identifier_to_value:
+            tab_obj = session.query(table_class).filter(*identifier_to_value).first()
         else:
             tab_obj = table_class()
             is_new = True
@@ -123,6 +154,7 @@ def write_obj_to_table(table_class, identifier=None, value=None, **column_name_t
             session.add(tab_obj)
         # else just update
         session.commit()
+        return tab_obj
 
 
 def write_objects_to_table(table_class, object_list: List[dict], params_to_dict: list, params_to_db: list,

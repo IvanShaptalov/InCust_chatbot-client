@@ -34,11 +34,12 @@ def database_link():
 
 BOT_TOKEN = os.environ.get('bot_token') or config['Bot']['bot_token']
 PORT = os.environ.get('port') or config['Server']['port']
-alchemy_db_path = database_link()
-ic(alchemy_db_path)
-host = os.environ.get('host') or config['Server']['host']
-protocol = os.environ.get('protocol') or config['Server']['protocol']
-media_group_id = os.environ.get('media_group_id') or config['GroupChat']['media']
+ALCHEMY_DB_PATH = database_link()
+ic(ALCHEMY_DB_PATH)
+HOST = os.environ.get('host') or config['Server']['host']
+PROTOCOl = os.environ.get('protocol') or config['Server']['protocol']
+MEDIA_GROUP_ID = os.environ.get('media_group_id') or config['GroupChat']['media']
+SERVICE_BOT = os.environ.get('service_bot') or config['Bot']['service_bot']
 # region commands
 START = '/start'
 MAIN_MENU = 'Главное меню'
