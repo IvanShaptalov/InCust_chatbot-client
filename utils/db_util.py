@@ -8,6 +8,7 @@ from sqlalchemy.orm import sessionmaker, relationship
 import settings
 
 path_alchemy_local = settings.ALCHEMY_DB_PATH
+
 # test database
 Base = declarative_base()
 

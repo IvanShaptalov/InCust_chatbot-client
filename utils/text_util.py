@@ -1,6 +1,8 @@
 # region event creating
 import settings
+
 from utils import useful_methods
+
 # todo change emoji
 EVENT_CREATING_OPENED = f'Создание нового события:\nВведите имя'
 

@@ -1,4 +1,6 @@
 import datetime
+from aiogram import types, Bot
+from aiogram.types import PhotoSize
 
 from aiogram import types, Bot
 from aiogram.types import PhotoSize

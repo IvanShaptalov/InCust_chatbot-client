@@ -105,6 +105,7 @@ async def handle_end_date(message: types.Message, state: FSMContext, bot: Bot):
         # date valid
         if message.text == settings.SKIP:
             date = None
+
         statement = await state.get_state()
         if statement is None:
             return

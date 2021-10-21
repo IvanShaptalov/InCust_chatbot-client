@@ -16,5 +16,4 @@ async def handle_catalog(message: types.Message, bot: Bot):
                            text_util.CATALOG_OPENED)
     # todonext create pagination, deletions and chat in events
 
-
 # endregion catalog
