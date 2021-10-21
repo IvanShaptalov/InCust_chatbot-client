@@ -7,7 +7,7 @@ from sqlalchemy.orm import sessionmaker, relationship
 import settings
 
 path_alchemy_local = settings.alchemy_db_path
-
+# test database
 Base = declarative_base()
 
 
@@ -43,7 +43,6 @@ class User(Base):
     __tablename__ = "user"
 
     chat_id = Column('chat_id', Integer, unique=True, primary_key=True, index=True)
-    statement = Column('statement', String, unique=False)
     user_fullname = Column('username', String, unique=False)
     in_chat = Column('in_chat', Boolean, unique=False, default=False)
     events = relationship('Event', back_populates='event_owner')
@@ -60,10 +59,9 @@ class Event(Base):
     ev_name = Column('ev_name', String, unique=False)
     title = Column('title', String, unique=False)
     description = Column('description', String, unique=False)
-    media_link = Column('media_link', String, unique=False)
+    media = Column('media', String, unique=False)
     event_owner = relationship(User, back_populates="events")
-    messages = relationship('ChatMessage', back_populates="event")
-    end_date = Column('end_message', DateTime, unique=False, nullable=True)
+    end_date = Column('end_date', DateTime, unique=False, nullable=True)
 
     # endregion
 
@@ -162,7 +160,6 @@ def write_objects_to_table(table_class, object_list: List[dict], params_to_dict:
 
 
 # region abstract edit
-# test this method
 def edit_obj_in_table(table_class, identifier_to_value: list, **column_name_to_value):
     """edit object in selected table
     :param table_class - select table

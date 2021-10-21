@@ -1,9 +1,8 @@
 import json
-
 from aiogram import types, Bot
 from icecream import ic
-import states
-from utils import useful_methods, keyboard_snippets
+from utils import keyboard_snippets, text_util
+
 
 # region server views
 def process_notification(request):
@@ -42,12 +41,11 @@ def process_webhook(request, bot):
 
 # endregion
 
-
-# region bot views
+# region bot start
 async def handle_start(message: types.Message, bot: Bot):
     ic('start statement')
     await bot.send_message(message.chat.id,
-                           f'Добро пожаловать {useful_methods.get_full_user_name(message)}!',
+                           text_util.MAIN_MENU_OPENED(message),
                            reply_markup=keyboard_snippets.main_menu())
 
-# endregion
+# endregion start
