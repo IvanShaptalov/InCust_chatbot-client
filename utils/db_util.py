@@ -1,7 +1,7 @@
 import logging
 from typing import List
 from icecream import ic
-from sqlalchemy import Integer, Column, String, create_engine, BigInteger, DateTime, Boolean, Table, ForeignKey
+from sqlalchemy import Column, String, create_engine, BigInteger, DateTime, Boolean, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 
@@ -54,18 +54,21 @@ class User(Base):
         user = get_from_db_multiple_filter(User,
                                            identifier_to_value=[User.chat_id == self.chat_id])
         if user is None:
-            user = write_obj_to_table(table_class=User,
-                                      identifier_to_value=[User.chat_id == self.chat_id],
-                                      chat_id=self.chat_id,
-                                      user_fullname=self.user_fullname,
-                                      in_chat=self.in_chat)
+            with session:
+                user = write_obj_to_table(session_p=session,
+                                          table_class=User,
+                                          identifier_to_value=[User.chat_id == self.chat_id],
+                                          chat_id=self.chat_id,
+                                          user_fullname=self.user_fullname,
+                                          in_chat=self.in_chat)
 
 
 class Event(Base):
     __tablename__ = 'event'
 
     id = Column('event_id', BigInteger, unique=True, primary_key=True, autoincrement=True, index=True)
-
+    previous_event_id = Column('previous_event_id', BigInteger, unique=True)
+    next_event_id = Column('next_event_id', BigInteger, unique=True)
     ev_name = Column('ev_name', String, unique=False)
     title = Column('title', String, unique=False)
     description = Column('description', String, unique=False)
@@ -75,15 +78,39 @@ class Event(Base):
     end_date = Column('end_date', DateTime, unique=False, nullable=True)
 
     def save(self):
-        self.event_owner.save()
-        write_obj_to_table(table_class=Event,
-                           ev_name=self.ev_name,
-                           title=self.title,
-                           description=self.description,
-                           media=self.media,
-                           end_date=self.end_date,
-                           event_owner_id=self.event_owner_id)
-        logging.info('event saved')
+        with session:
+            self.event_owner.save()
+            obj = write_obj_to_table(session_p=session,
+                                     table_class=Event,
+                                     ev_name=self.ev_name,
+                                     title=self.title,
+                                     description=self.description,
+                                     media=self.media,
+                                     end_date=self.end_date,
+                                     event_owner_id=self.event_owner_id)
+            assert isinstance(obj, Event)
+
+            edit_obj_in_table(session, Event, [Event.id == obj.id],
+                              next_event_id=obj.id + 1,  # next user id
+                              previous_event_id=obj.id - 1 if (obj.id - 1) > 0 else 1)  # previous user id
+            logging.info('event saved')
+
+    @staticmethod
+    def get_next_event(self, start_event_id: int, count_of_events: int = 1) -> list:
+        events = []
+        event = None
+        for c in range(count_of_events):
+            if len(events) == 0:
+                event = get_first(Event)
+                events.append(event)
+                continue
+            if event:
+                event = get_from_db_multiple_filter(Event, [Event.id == event.next_event_id])
+                if isinstance(event, Event):
+                    events.append(event)
+                else:
+                    break
+        return events
 
     def stringify(self):
         return f'{self.title}\n\n' \
@@ -101,7 +128,7 @@ class Event(Base):
 # region get_from_db methods
 
 
-def get_from_db_multiple_filter(table_class, identifier_to_value: list, get_type='one',
+def get_from_db_multiple_filter(table_class, identifier_to_value: list = None, get_type='one',
                                 all_objects: bool = None):
     """WARNING! DO NOT USE THIS OBJECT TO EDIT DATA IN DATABASE! IT ISN`T WORK!
     USE ONLY TO SHOW DATA...
@@ -133,29 +160,27 @@ def get_from_db_multiple_filter(table_class, identifier_to_value: list, get_type
 # region abstract write
 
 
-def write_obj_to_table(table_class, identifier_to_value: List = None, **column_name_to_value):
+def write_obj_to_table(session_p, table_class, identifier_to_value: List = None, **column_name_to_value):
     """column name to value must be exist in table class in columns"""
     # get obj
-    with session:
-        is_new = False
-        if identifier_to_value:
-            tab_obj = session.query(table_class).filter(*identifier_to_value).first()
-        else:
-            tab_obj = table_class()
-            is_new = True
-
-        # is obj not exist in db, we create them
-        if not tab_obj:
-            tab_obj = table_class()
-            is_new = True
-        for col_name, val in column_name_to_value.items():
-            tab_obj.__setattr__(col_name, val)
-        # if obj created jet, we add his to db
-        if is_new:
-            session.add(tab_obj)
-        # else just update
-        session.commit()
-        return tab_obj
+    is_new = False
+    if identifier_to_value:
+        tab_obj = session_p.query(table_class).filter(*identifier_to_value).first()
+    else:
+        tab_obj = table_class()
+        is_new = True
+    # is obj not exist in db, we create them
+    if not tab_obj:
+        tab_obj = table_class()
+        is_new = True
+    for col_name, val in column_name_to_value.items():
+        tab_obj.__setattr__(col_name, val)
+    # if obj created jet, we add his to db
+    if is_new:
+        session_p.add(tab_obj)
+    # else just update
+    session_p.commit()
+    return tab_obj
 
 
 def write_objects_to_table(table_class, object_list: List[dict], params_to_dict: list, params_to_db: list,
@@ -193,21 +218,20 @@ def write_objects_to_table(table_class, object_list: List[dict], params_to_dict:
 
 
 # region abstract edit
-def edit_obj_in_table(table_class, identifier_to_value: list, **column_name_to_value):
+def edit_obj_in_table(session_p, table_class, identifier_to_value: list, **column_name_to_value):
     """edit object in selected table
-    :param table_class - select table
-    :param column_name_to_value to value must be exist in table class in columns
-    :param identifier_to_value: - select filter column example [UserStatements.statement == 'hello_statement',next]
+    :param table_class: select table
+    :param column_name_to_value: to value must be exist in table class in columns
+    :param session_p: connection to database
+    :param identifier_to_value: select filter column example [UserStatements.statement == 'hello_statement',next]
     note that UserStatements.statement is instrumented attribute"""
     # get obj
-    with session:
-        tab_obj = session.query(table_class).filter(*identifier_to_value).first()
+    tab_obj = session_p.query(table_class).filter(*identifier_to_value).first()
 
-        if tab_obj:
-            for col_name, val in column_name_to_value.items():
-                tab_obj.__setattr__(col_name, val)
-        session.commit()
-
+    if tab_obj:
+        for col_name, val in column_name_to_value.items():
+            tab_obj.__setattr__(col_name, val)
+    session_p.commit()
 
 # endregion
 

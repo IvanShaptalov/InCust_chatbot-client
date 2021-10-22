@@ -1,19 +1,18 @@
-import logging
-
 from aiogram import types, Bot
-from aiogram.dispatcher import FSMContext
 from icecream import ic
 
-import settings
-from client_chat_bot import states
-from utils import useful_methods, keyboard_snippets, text_util
+from utils import text_util
 
 
 # region catalog
+
+
 async def handle_catalog(message: types.Message, bot: Bot):
     ic('show catalog statement')
     await bot.send_message(message.chat.id,
                            text_util.CATALOG_OPENED)
+    # events = Event.get_next_event()
+    # print(events)
     # todonext create pagination, deletions and chat in events
 
 # endregion catalog

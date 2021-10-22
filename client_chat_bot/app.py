@@ -128,7 +128,6 @@ async def handle_end_date(message: types.Message, state: FSMContext):
     return await views_add_event.handle_end_date(message, state, bot)
 
 
-
 # endregion add event
 
 

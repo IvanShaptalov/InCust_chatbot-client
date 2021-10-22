@@ -33,6 +33,7 @@ CATALOG_OPENED = f'Каталог'
 # endregion catalog
 
 # region main menu
+# noinspection PyPep8Naming
 def MAIN_MENU_OPENED(message):
     return f'Добро пожаловать {useful_methods.get_full_user_name(message)}!'
 

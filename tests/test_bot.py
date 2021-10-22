@@ -1,5 +1,4 @@
 import pytest
-from icecream import ic
 
 
 @pytest.mark.config
