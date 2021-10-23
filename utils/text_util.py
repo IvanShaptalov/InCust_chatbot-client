@@ -35,6 +35,7 @@ SURE_DELETE = 'Вы уверены что хотите удалить событ
 CONNECT_EVENT = 'Связаться'
 EVENT_DELETED = 'Событие удалено'
 DELETE_CANCELLED = 'Вы точно хотите удалить событие?'
+EVENT_NOT_EXISTS = 'Событие удалено'
 
 
 def PLUS(number: int):

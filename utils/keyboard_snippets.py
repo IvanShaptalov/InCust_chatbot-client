@@ -2,12 +2,12 @@ from aiogram import types
 import settings
 
 
-def _def_markup(resize_keyboard=True, selective=True) -> types.ReplyKeyboardMarkup:
+def _def_reply_markup(resize_keyboard=True, selective=True) -> types.ReplyKeyboardMarkup:
     return types.ReplyKeyboardMarkup(resize_keyboard=True, selective=True)
 
 
 def main_menu() -> types.ReplyKeyboardMarkup:
-    return _def_markup().add(settings.CATALOG, settings.ADD_EVENT)
+    return _def_reply_markup().add(settings.CATALOG, settings.ADD_EVENT)
 
 
 def remove() -> types.ReplyKeyboardRemove:
@@ -15,15 +15,19 @@ def remove() -> types.ReplyKeyboardRemove:
 
 
 def go_to_main_menu() -> types.ReplyKeyboardMarkup:
-    return _def_markup().add(settings.MAIN_MENU)
+    return _def_reply_markup().add(settings.MAIN_MENU)
 
 
 def main_menu_and_skip() -> types.ReplyKeyboardMarkup:
     return go_to_main_menu().add(settings.SKIP)
 
 
-def sure_keyboard() -> types.InlineKeyboardButton:
-    return _def_markup().add(settings.YES, settings.NO)
+def sure_inline_keyboard(event_id: int) -> types.InlineKeyboardButton:
+    return _def_inline_markup(). \
+        add(
+        inline_button(settings.YES, f'{settings.YES}:{event_id}'),
+        inline_button(settings.NO, f'{settings.NO}:')
+    )
 
 
 # inline

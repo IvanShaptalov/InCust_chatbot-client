@@ -59,19 +59,22 @@ async def handle_start(message: types.Message):
 
 # region catalog
 @dp.message_handler(lambda message: message.text in settings.CATALOG)
-async def handle_catalog(message: types.Message):
-    return await views_catalog.handle_catalog_message(message, bot)
+async def handle_catalog_menu(message: types.Message):
+    return await views_catalog.handle_catalog_menu(message, bot)
 
 
+# ask user
 @dp.callback_query_handler(lambda callback: settings.DELETE_EVENT in callback.data)
-async def handle_delete_event_callback(callback: types.CallbackQuery):
-    return await views_catalog.handle_delete_event_callback(callback, bot)
+async def handle_sure_to_delete_event_callback(callback: types.CallbackQuery):
+    return await views_catalog.handle_sure_to_delete_callback(callback, bot)
 
 
-# @dp.message_handler(lambda message: message.text.lower() == settings.YES.lower()
-#                     or message.text.lower() == settings.NO.lower(),
-#                     state=states.ask_to_delete)
-# async def handle_delete_answer(message: types.Message, )
+# delete event
+@dp.callback_query_handler(lambda callback: settings.YES in callback.data
+                           or settings.NO in callback.data)
+async def handle_sure_delete_event_callback(callback: types.CallbackQuery):
+    return await views_catalog.handle_delete_answer(callback, bot)
+
 
 @dp.callback_query_handler(lambda callback: settings.ADD_EVENTS_PAGINATOR in callback.data)
 async def handle_callback_paginator(callback: types.CallbackQuery):
