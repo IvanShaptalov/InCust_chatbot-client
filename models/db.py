@@ -2,13 +2,12 @@ import logging
 from typing import List
 from icecream import ic
 from sqlalchemy import Column, String, create_engine, BigInteger, DateTime, Boolean, ForeignKey, func
-from sqlalchemy.engine import Row
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 
-import settings
+from data import config
 
-path_alchemy_local = settings.ALCHEMY_DB_PATH
+path_alchemy_local = config.ALCHEMY_DB_PATH
 
 # test database
 Base = declarative_base()

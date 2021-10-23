@@ -38,17 +38,11 @@ def try_get_date_from_str(from_date, date_format):
         return date_from
 
 
-def user_in_chat(message):
-    # todonext create check user in chat
-    return False
-
-
 def get_id_from_data(data: str, index):
     """
     get id from data
     :param data: data from callback
     :param index: index of information
-    :return:
     """
     assert ':' in data
     return data.split(':')[index]
