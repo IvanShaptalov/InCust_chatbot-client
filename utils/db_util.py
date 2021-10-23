@@ -89,6 +89,8 @@ class Event(Base):
 
     def save(self):
         with session:
+            # get prev_event to link to new event
+            prev_event = get_by_max(Event, Event.id)
             self.event_owner.save()
             obj = write_obj_to_table(session_p=session,
                                      table_class=Event,
@@ -99,10 +101,13 @@ class Event(Base):
                                      end_date=self.end_date,
                                      event_owner_id=self.event_owner_id)
             assert isinstance(obj, Event)
-
+            # get previous id from event or get 0 if previous event not exists
+            event_prev_id = None
+            if isinstance(prev_event, Event):
+                event_prev_id = prev_event.id
             edit_obj_in_table(session, Event, [Event.id == obj.id],
                               next_event_id=obj.id + 1,  # next user id
-                              previous_event_id=obj.id - 1 if (obj.id - 1) > 0 else 1)  # previous user id
+                              previous_event_id=event_prev_id if event_prev_id else -1)  # previous user id
             logging.info('event saved')
 
     @staticmethod

@@ -84,7 +84,7 @@ async def handle_delete_answer(callback: types.CallbackQuery, bot: Bot):
 
 
 async def handle_sure_to_delete_callback(callback: types.CallbackQuery, bot: Bot):
-    # # todonext create deleting with callback: delete - are you sure? yes: delete event, no: pass :: then delete message
+    # solved create deleting with callback: delete - are you sure? yes: delete event, no: pass :: then delete message
     print(callback.data)
     event_id = useful_methods.get_id_from_data(callback.data, 1)
     if db_util.get_from_db_multiple_filter(db_util.Event, [db_util.Event.id == event_id]):
