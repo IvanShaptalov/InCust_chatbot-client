@@ -4,8 +4,8 @@ import pytest
 @pytest.mark.config
 def test_config_valid():
     try:
-        import settings
-        print(settings.PROTOCOl)
+        from data import config
+        print(config.PROTOCOl)
     except KeyError as e:
         assert False, "config valid failed"
 

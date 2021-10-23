@@ -1,5 +1,5 @@
 # region event creating
-import settings
+from data import config
 
 from utils import useful_methods
 
@@ -23,7 +23,7 @@ PHOTO_NOT_SAVED = '✅, При обработке фото произошла о
 DATE_INVALID = '❌ Вы ввели неправильно дату или дату окончания события правильный формат:\n'
 
 EVENT_CREATED = 'Вы создали событие\n' \
-                f'Для того, чтобы получать уведомления о сообщениях перейдите в \n{settings.SERVICE_BOT}\nи напишите /start'
+                f'Для того, чтобы получать уведомления о сообщениях перейдите в \n{config.SERVICE_BOT}\nи напишите /start'
 # endregion event creating
 
 # region catalog
@@ -38,6 +38,7 @@ DELETE_CANCELLED = 'Вы точно хотите удалить событие?'
 EVENT_NOT_EXISTS = 'Событие удалено'
 
 
+# noinspection PyPep8Naming
 def PLUS(number: int):
     return f'+{number}'
 
