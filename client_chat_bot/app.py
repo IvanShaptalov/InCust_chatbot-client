@@ -60,7 +60,22 @@ async def handle_start(message: types.Message):
 # region catalog
 @dp.message_handler(lambda message: message.text in settings.CATALOG)
 async def handle_catalog(message: types.Message):
-    return await views_catalog.handle_catalog(message, bot)
+    return await views_catalog.handle_catalog_message(message, bot)
+
+
+@dp.callback_query_handler(lambda callback: settings.DELETE_EVENT in callback.data)
+async def handle_delete_event_callback(callback: types.CallbackQuery):
+    return await views_catalog.handle_delete_event_callback(callback, bot)
+
+
+# @dp.message_handler(lambda message: message.text.lower() == settings.YES.lower()
+#                     or message.text.lower() == settings.NO.lower(),
+#                     state=states.ask_to_delete)
+# async def handle_delete_answer(message: types.Message, )
+
+@dp.callback_query_handler(lambda callback: settings.ADD_EVENTS_PAGINATOR in callback.data)
+async def handle_callback_paginator(callback: types.CallbackQuery):
+    return await views_catalog.handle_catalog_callback(callback, bot)
 
 
 # endregion catalog

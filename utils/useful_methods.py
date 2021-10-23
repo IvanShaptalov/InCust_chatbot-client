@@ -41,3 +41,8 @@ def try_get_date_from_str(from_date, date_format):
 def user_in_chat(message):
     # todonext create check user in chat
     return False
+
+
+def get_id_from_data(data: str, index):
+    assert ':' in data
+    return data.split(':')[index]

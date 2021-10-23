@@ -22,12 +22,23 @@ PHOTO_NOT_SAVED = '✅, При обработке фото произошла о
 
 DATE_INVALID = '❌ Вы ввели неправильно дату или дату окончания события правильный формат:\n'
 
-EVENT_CREATED = 'Вы создали событие\m' \
+EVENT_CREATED = 'Вы создали событие\n' \
                 f'Для того, чтобы получать уведомления о сообщениях перейдите в \n{settings.SERVICE_BOT}\nи напишите /start'
 # endregion event creating
 
 # region catalog
 CATALOG_OPENED = f'Каталог'
+SHOW_MORE = 'Показать больше'
+
+DELETE_EVENT = 'Удалить событие'
+SURE_DELETE = 'Вы уверены что хотите удалить событие?'
+CONNECT_EVENT = 'Связаться'
+EVENT_DELETED = 'Событие удалено'
+DELETE_CANCELLED = 'Вы точно хотите удалить событие?'
+
+
+def PLUS(number: int):
+    return f'+{number}'
 
 
 # endregion catalog

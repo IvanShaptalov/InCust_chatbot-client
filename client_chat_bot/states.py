@@ -10,3 +10,5 @@ class EventForm(StatesGroup):
     description = State()
     media = State()
     end_date = State()  # can be empty
+
+

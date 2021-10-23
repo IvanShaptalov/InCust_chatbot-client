@@ -46,8 +46,16 @@ MAIN_MENU = 'Главное меню'
 CATALOG = 'Каталог'
 ADD_EVENT = 'Добавить событие'
 SKIP = 'Оставить поле пустым'
+# Sure check
+YES = 'да'
+NO = 'нет'
 # endregion
 # validations
 date_format = '%Y-%m-%d'
 date_format_human = 'Год-месяц-день'
+
+# callback data markers
+ADD_EVENTS_PAGINATOR = 'add'
+DELETE_EVENT = 'delete'
+CONNECT_TO_EVENT = 'connect'
 

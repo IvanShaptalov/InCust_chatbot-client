@@ -1,7 +1,8 @@
 import logging
 from typing import List
 from icecream import ic
-from sqlalchemy import Column, String, create_engine, BigInteger, DateTime, Boolean, ForeignKey
+from sqlalchemy import Column, String, create_engine, BigInteger, DateTime, Boolean, ForeignKey, func
+from sqlalchemy.engine import Row
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 
@@ -66,9 +67,9 @@ class User(Base):
 class Event(Base):
     __tablename__ = 'event'
 
-    id = Column('event_id', BigInteger, unique=True, primary_key=True, autoincrement=True, index=True)
-    previous_event_id = Column('previous_event_id', BigInteger, unique=True)
-    next_event_id = Column('next_event_id', BigInteger, unique=True)
+    id = Column('event_id', BigInteger, unique=True, primary_key=True, index=True)
+    previous_event_id = Column('previous_event_id', BigInteger, unique=False)
+    next_event_id = Column('next_event_id', BigInteger, unique=False)
     ev_name = Column('ev_name', String, unique=False)
     title = Column('title', String, unique=False)
     description = Column('description', String, unique=False)
@@ -76,6 +77,15 @@ class Event(Base):
     event_owner_id = Column('event_owner_id', BigInteger, ForeignKey('user.chat_id'), unique=False)
     event_owner = relationship(User, back_populates='event')
     end_date = Column('end_date', DateTime, unique=False, nullable=True)
+
+    def delete(self):
+        with session:
+            edit_obj_in_table(session, Event, [Event.id == self.previous_event_id],
+                              next_event_id=self.next_event_id)
+            edit_obj_in_table(session, Event, [Event.id == self.next_event_id],
+                              previous_event_id=self.previous_event_id)
+            session.commit()
+            delete_obj_from_table(session, Event, [Event.id == self.id])
 
     def save(self):
         with session:
@@ -96,16 +106,16 @@ class Event(Base):
             logging.info('event saved')
 
     @staticmethod
-    def get_next_event(self, start_event_id: int, count_of_events: int = 1) -> list:
+    def get_next_event(start_event_id: int, count_of_events: int = 1) -> list:
         events = []
         event = None
         for c in range(count_of_events):
             if len(events) == 0:
-                event = get_first(Event)
+                event = get_from_db_multiple_filter(Event, [Event.id == start_event_id])
                 events.append(event)
                 continue
             if event:
-                event = get_from_db_multiple_filter(Event, [Event.id == event.next_event_id])
+                event = get_from_db_multiple_filter(Event, [Event.id == event.previous_event_id])
                 if isinstance(event, Event):
                     events.append(event)
                 else:
@@ -233,19 +243,20 @@ def edit_obj_in_table(session_p, table_class, identifier_to_value: list, **colum
             tab_obj.__setattr__(col_name, val)
     session_p.commit()
 
+
 # endregion
 
 
 # region abstract delete from db
-def delete_obj_from_table(table_class, identifier_to_value: list):
+def delete_obj_from_table(session_p, table_class, identifier_to_value: list):
     """edit object in selected table
-    :param table_class - select table
-    :param identifier_to_value: - select filter column example [UserStatements.statement == 'hello_statement',next]
+    :param table_class: select table
+    :param session_p: connection to database
+    :param identifier_to_value:  select filter column example [UserStatements.statement == 'hello_statement',next]
     note that UserStatements.statement is instrumented attribute"""
-    with session:
-        result = session.query(table_class).filter(*identifier_to_value).delete()
-        ic('affected {} rows'.format(result))
-        session.commit()
+    result = session_p.query(table_class).filter(*identifier_to_value).delete()
+    ic('affected {} rows'.format(result))
+    session_p.commit()
 
 
 # endregion
@@ -266,10 +277,13 @@ def get_count(table_class, identifier_to_value: list = None):
         return rows
 
 
-def get_first(table_class):
+def get_by_max(table_class, column):
     # work on func min
     with session:
-        row = session.query(table_class).first()
+        max_id = session.query(func.max(column)).scalar()
+        assert isinstance(max_id, int)
+        row = session.query(table_class).filter(column == max_id).first()
+        # row = session.query(table_class).filter(func.max(column)).first()
         return row
 
 # endregion
