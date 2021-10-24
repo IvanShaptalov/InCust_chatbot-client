@@ -1,8 +1,7 @@
 from aiogram import Dispatcher
 from aiogram.dispatcher.filters import Text
 
-import states.client
-from data import config, text_util
+from data import config
 from states.client import EventForm, CatalogGroup
 
 from . import add_event

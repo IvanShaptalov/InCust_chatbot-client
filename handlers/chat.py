@@ -22,7 +22,7 @@ async def handle_chat_connect(callback: types.CallbackQuery, state: FSMContext):
             if isinstance(event, db.Event):
                 await state.update_data(event_id=event_id)
                 await CatalogGroup.in_chat.set()
-                # solved save event, owner chat id
+
                 db.User.set_in_chat(callback.message.chat.id, True)
                 await callback.message.reply(text_util.ENTER_IN_CHAT.format(event.title),
                                              reply_markup=keyboards.r_snippets.exit_from_chat_or_show_event())
@@ -43,7 +43,7 @@ async def show_event(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         event_id = int(data['event_id'])
         with db.session:
-            # solved get event
+
             event = db.get_from_db_multiple_filter(table_class=db.Event,
                                                    identifier_to_value=[db.Event.id == event_id],
                                                    open_session=db.session)
