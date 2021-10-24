@@ -2,6 +2,7 @@ from aiogram import types
 from icecream import ic
 
 import keyboards
+import states.client
 from data import config, text_util
 from utils import useful_methods
 from models import db
@@ -14,7 +15,7 @@ from data.bot_setup import bot
 # region show catalog
 async def handle_catalog_menu(message: types.Message):
     ic('show catalog statement')
-
+    await states.client.CatalogGroup.catalog_menu.set()
     event = db.get_by_max(db.Event, db.Event.id)
     await paginator.show_catalog_page(chat_id=message.chat.id,
                                       events=event.get_next_event(event.id, 2),
@@ -55,7 +56,6 @@ async def handle_delete_answer(callback: types.CallbackQuery):
 async def handle_sure_to_delete_callback(callback: types.CallbackQuery):
     # solved create deleting with callback: delete - are you sure? yes: delete event, no: pass :: then delete message
     print(callback.data)
-    # fixme send to filters event
     event_id = useful_methods.get_id_from_data(callback.data, 1)
     if db.get_from_db_multiple_filter(db.Event, [db.Event.id == event_id]):
         await callback.message.reply(text_util.SURE_DELETE,

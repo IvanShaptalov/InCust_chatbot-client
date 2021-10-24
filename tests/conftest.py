@@ -19,3 +19,8 @@ def valid_filter_params():
 @pytest.fixture
 def filter_params(invalid_filter_params, valid_filter_params):
     return invalid_filter_params + valid_filter_params
+
+
+@pytest.fixture
+def chat_id():
+    return '635466458'

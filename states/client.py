@@ -12,3 +12,6 @@ class EventForm(StatesGroup):
     end_date = State()  # can be empty
 
 
+class CatalogGroup(StatesGroup):
+    catalog_menu = State()
+    in_chat = State()

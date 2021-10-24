@@ -3,7 +3,7 @@ from data import config
 
 from utils import useful_methods
 
-# todo change emoji
+# event creating
 EVENT_CREATING_OPENED = f'Создание нового события:\nВведите имя'
 
 OK_FOR_HANDLE_NAME = '✅, Введите заголовок'
@@ -24,9 +24,8 @@ DATE_INVALID = '❌ Вы ввели неправильно дату или да�
 
 EVENT_CREATED = 'Вы создали событие\n' \
                 f'Для того, чтобы получать уведомления о сообщениях перейдите в \n{config.SERVICE_BOT}\nи напишите /start'
-# endregion event creating
 
-# region catalog
+# catalog
 CATALOG_OPENED = f'Каталог'
 SHOW_MORE = 'Показать больше'
 
@@ -43,11 +42,11 @@ def PLUS(number: int):
     return f'+{number}'
 
 
-# endregion catalog
-
-# region main menu
+#  main menu
 # noinspection PyPep8Naming
 def MAIN_MENU_OPENED(message):
     return f'Добро пожаловать {useful_methods.get_full_user_name(message)}!'
 
-# endregion main menu
+
+# chat
+ENTER_IN_CHAT = 'Вы вошли в чат с владельцем события {}'
