@@ -14,7 +14,7 @@ async def show_catalog_page(chat_id, events: list, bot: Bot):
     """
     last_event = None
     for event in events:
-        markup = keyboards.inline.inline_markup(text_util.CONNECT_EVENT, f'{config.CONNECT_TO_EVENT}:{event.id}')
+        markup = keyboards.inline.inline_markup(text_util.CONNECT_EVENT, f'{config.CONNECT_TO_CHAT}:{event.id}')
         if event.event_owner_id == chat_id:
             # markup to owner
             markup.add(

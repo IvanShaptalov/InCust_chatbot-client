@@ -47,6 +47,9 @@ MAIN_MENU = 'Главное меню'
 CATALOG = 'Каталог'
 ADD_EVENT = 'Добавить событие'
 SKIP = 'Оставить поле пустым'
+EXIT_FROM_CHAT = 'Выйти из чата'
+SHOW_EVENT_IN_CHAT = 'Посмотреть событие'
+
 # Sure check
 YES = 'да'
 NO = 'нет'
@@ -58,5 +61,6 @@ date_format_human = 'Год-месяц-день'
 # callback data markers
 ADD_EVENTS_PAGINATOR = 'add'
 DELETE_EVENT = 'delete'
-CONNECT_TO_EVENT = 'connect'
+CONNECT_TO_CHAT = 'connect'
+
 

@@ -1,6 +1,14 @@
 # todonext refactor, create tests
-def user_in_chat(message):
-    # todo create check user in chat
+from aiogram import types
+
+from models import db
+from utils import useful_methods
+
+
+def user_in_chat(chat_id):
+    user = db.get_from_db_multiple_filter(db.User, [db.User.chat_id == chat_id])
+    if isinstance(user, db.User):
+        return user.in_chat
     return False
 
 
@@ -21,4 +29,3 @@ def event_is_removed(event_id, data):
 #
 #
 # dp.filters_factory.bind(MyFilter)
-

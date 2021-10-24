@@ -62,6 +62,14 @@ class User(Base):
                                           user_fullname=self.user_fullname,
                                           in_chat=self.in_chat)
 
+    @staticmethod
+    def set_in_chat(chat_id, in_chat: bool):
+        with session:
+            edit_obj_in_table(session_p=session,
+                              table_class=User,
+                              identifier_to_value=[User.chat_id == chat_id],
+                              in_chat=in_chat)
+
 
 class Event(Base):
     __tablename__ = 'event'
@@ -85,6 +93,9 @@ class Event(Base):
                               previous_event_id=self.previous_event_id)
             session.commit()
             delete_obj_from_table(session, Event, [Event.id == self.id])
+
+    def get_owner(self) -> User:
+        return self.event_owner
 
     def save(self):
         with session:
@@ -143,29 +154,36 @@ class Event(Base):
 
 
 def get_from_db_multiple_filter(table_class, identifier_to_value: list = None, get_type='one',
-                                all_objects: bool = None):
-    """WARNING! DO NOT USE THIS OBJECT TO EDIT DATA IN DATABASE! IT ISN`T WORK!
-    USE ONLY TO SHOW DATA...
-    :param table_class - select table
+                                all_objects: bool = None, open_session=None):
+    """:param table_class - select table
     :param identifier_to_value: - select filter column example [UserStatements.statement == 'hello_statement',next]
     note that UserStatements.statement is instrumented attribute
     :param get_type - string 'many' or 'one', return object or list of objects
-    :param all_objects - return all rows from table"""
+    :param all_objects - return all rows from table\
+    :param open_session - leave session open"""
     many = 'many'
     one = 'one'
-    with session:
+    is_open = False
+    if open_session:
+        inner_session = open_session
+    else:
+        inner_session = session
+    try:
+        objects = None
         if all_objects is True:
-            objects = session.query(table_class).all()
+            objects = inner_session.query(table_class).all()
 
             return objects
         if get_type == one:
-            obj = session.query(table_class).filter(*identifier_to_value).first()
+            obj = inner_session.query(table_class).filter(*identifier_to_value).first()
 
             return obj
         elif get_type == many:
-            objects = session.query(table_class).filter(*identifier_to_value).all()
-
-            return objects
+            objects = inner_session.query(table_class).filter(*identifier_to_value).all()
+    finally:
+        if open_session is None:
+            inner_session.close()
+    return objects
 
 
 # endregion

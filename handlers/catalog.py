@@ -2,6 +2,7 @@ from aiogram import types
 from icecream import ic
 
 import keyboards
+import states.client
 from data import config, text_util
 from utils import useful_methods
 from models import db
@@ -14,7 +15,7 @@ from data.bot_setup import bot
 # region show catalog
 async def handle_catalog_menu(message: types.Message):
     ic('show catalog statement')
-
+    await states.client.CatalogGroup.catalog_menu.set()
     event = db.get_by_max(db.Event, db.Event.id)
     await paginator.show_catalog_page(chat_id=message.chat.id,
                                       events=event.get_next_event(event.id, 2),

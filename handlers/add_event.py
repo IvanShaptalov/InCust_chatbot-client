@@ -115,6 +115,7 @@ async def handle_end_date(message: types.Message, state: FSMContext):
         statement = await state.get_state()
         if statement is None:
             return
+
         await state.update_data(end_date=date)
         logging.info(f'finish statement: {statement}')
         event = await save_state_info(message, state)
