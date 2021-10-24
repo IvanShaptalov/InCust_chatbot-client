@@ -6,4 +6,3 @@ def user_in_chat(chat_id):
     if isinstance(user, db.User):
         return user.in_chat
     return False
-
