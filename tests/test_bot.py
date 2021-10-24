@@ -8,7 +8,7 @@ from models import db
 def test_config_valid():
     try:
         from data import config
-        print(config.PROTOCOl)
+        print(config.YES)
     except KeyError as e:
         assert False, "config valid failed"
 

@@ -160,7 +160,7 @@ def get_from_db_multiple_filter(table_class, identifier_to_value: list = None, g
     note that UserStatements.statement is instrumented attribute
     :param get_type - string 'many' or 'one', return object or list of objects
     :param all_objects - return all rows from table\
-    :param open_session - leave session open"""
+    :param open_session - leave session open , must be a session"""
     many = 'many'
     one = 'one'
     is_open = False

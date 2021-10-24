@@ -7,7 +7,7 @@ from data import config, text_util
 from utils import useful_methods
 from models import db
 from utils import paginator
-from data.bot_setup import bot
+from data.bot_setup import client_bot
 
 
 # region catalog
@@ -19,7 +19,7 @@ async def handle_catalog_menu(message: types.Message):
     event = db.get_by_max(db.Event, db.Event.id)
     await paginator.show_catalog_page(chat_id=message.chat.id,
                                       events=event.get_next_event(event.id, 2),
-                                      bot=bot)
+                                      bot=client_bot)
 
 
 async def handle_catalog_callback(callback: types.CallbackQuery):
@@ -28,7 +28,7 @@ async def handle_catalog_callback(callback: types.CallbackQuery):
     event = db.get_from_db_multiple_filter(db.Event, [db.Event.id == event_id])
     await paginator.show_catalog_page(chat_id=callback.message.chat.id,
                                       events=event.get_next_event(event_id, additional_events),
-                                      bot=bot)
+                                      bot=client_bot)
     await callback.message.delete()
     pass
 

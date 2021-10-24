@@ -29,9 +29,9 @@ async def show_catalog_page(chat_id, events: list, bot: Bot):
         last_event = event
     assert isinstance(last_event, db.Event)
     if db.get_from_db_multiple_filter(db.Event, [db.Event.id == last_event.previous_event_id]):
-        markup = keyboards.inline.inline_markup(text_util.PLUS(1),
+        markup = keyboards.inline.inline_markup(text_util.PLUS.format(1),
                                                 f"{config.ADD_EVENTS_PAGINATOR}:{1}:{last_event.previous_event_id}").add(
-            keyboards.inline.inline_button(text_util.PLUS(5),
+            keyboards.inline.inline_button(text_util.PLUS.format(5),
                                            f'{config.ADD_EVENTS_PAGINATOR}:{5}:{last_event.previous_event_id}'))
 
         await bot.send_message(chat_id,

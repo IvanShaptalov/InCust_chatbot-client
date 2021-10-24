@@ -5,7 +5,7 @@ from aiogram.dispatcher import FSMContext
 from icecream import ic
 
 from data import config, text_util
-from data.bot_setup import bot
+from data.bot_setup import client_bot
 
 import states
 import keyboards
@@ -18,9 +18,9 @@ from models import db
 
 async def handle_add_event(message: types.Message):
     ic('add event')
-    await bot.send_message(message.chat.id,
-                           text_util.EVENT_CREATING_OPENED,
-                           reply_markup=go_to_main_menu())
+    await client_bot.send_message(message.chat.id,
+                                  text_util.EVENT_CREATING_OPENED,
+                                  reply_markup=go_to_main_menu())
     await states.client.EventForm.event_name.set()
 
 
@@ -80,10 +80,10 @@ async def handle_invalid_photo(message: types.Message, state: FSMContext):
 
 
 async def handle_photo(message: types.Message, state: FSMContext):
-    unique_id = useful_methods.retrieve_message_unique_id(message, bot)
+    unique_id = useful_methods.retrieve_message_unique_id(message, client_bot)
     logging.info(unique_id)
     # solved save photo in group
-    result = await bot.send_photo(config.MEDIA_GROUP_ID, photo=unique_id)
+    result = await client_bot.send_photo(config.MEDIA_GROUP_ID, photo=unique_id)
     if result:
 
         statement = await states.client.EventForm.next()
@@ -120,10 +120,10 @@ async def handle_end_date(message: types.Message, state: FSMContext):
         logging.info(f'finish statement: {statement}')
         event = await save_state_info(message, state)
         if isinstance(event, db.Event):
-            await bot.send_photo(chat_id=event.event_owner_id,
-                                 photo=event.get_media(),
-                                 caption=f'{event.stringify()}\n{text_util.EVENT_CREATED}',
-                                 reply_markup=go_to_main_menu())
+            await client_bot.send_photo(chat_id=event.event_owner_id,
+                                        photo=event.get_media(),
+                                        caption=f'{event.stringify()}\n{text_util.EVENT_CREATED}',
+                                        reply_markup=go_to_main_menu())
         await state.finish()
 
 

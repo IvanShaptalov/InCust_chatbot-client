@@ -1,7 +1,4 @@
-# region event creating
 from data import config
-
-from utils import useful_methods
 
 # event creating
 EVENT_CREATING_OPENED = f'Создание нового события:\nВведите имя'
@@ -22,8 +19,9 @@ PHOTO_NOT_SAVED = '✅, При обработке фото произошла о
 
 DATE_INVALID = '❌ Вы ввели неправильно дату или дату окончания события правильный формат:\n'
 
-EVENT_CREATED = 'Вы создали событие\n' \
-                f'Для того, чтобы получать уведомления о сообщениях перейдите в \n{config.SERVICE_BOT}\nи напишите /start'
+LINKER_TO_SERVICE = f'Для того, чтобы получать уведомления о сообщениях перейдите в \n{config.SERVICE_BOT_LINK}\nи напишите /start'
+
+EVENT_CREATED = f'Вы создали событие\n{LINKER_TO_SERVICE}'
 
 # catalog
 CATALOG_OPENED = f'Каталог'
@@ -36,17 +34,17 @@ EVENT_DELETED = 'Событие удалено'
 DELETE_CANCELLED = 'Вы точно хотите удалить событие?'
 EVENT_NOT_EXISTS = 'Событие удалено'
 
+PLUS = '+{}'
+"""{} - must be a number"""
+# main menu
 
-# noinspection PyPep8Naming
-def PLUS(number: int):
-    return f'+{number}'
-
-
-#  main menu
-# noinspection PyPep8Naming
-def MAIN_MENU_OPENED(message):
-    return f'Добро пожаловать {useful_methods.get_full_user_name(message)}!'
-
-
+MAIN_MENU_OPENED = 'Добро пожаловать {}!'
+"""{} - user fullname"""
 # chat
+
 ENTER_IN_CHAT = 'Вы вошли в чат с владельцем события {}'
+"""{} - event_title"""
+# service bot
+
+NOTIFICATION = 'Сообщение "{}"\n{}: '
+""" 1{} event title 2{} user_fullname(sender)"""
