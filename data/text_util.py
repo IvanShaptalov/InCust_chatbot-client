@@ -46,5 +46,5 @@ ENTER_IN_CHAT = 'Вы вошли в чат с владельцем событи�
 """{} - event_title"""
 # service bot
 
-NOTIFICATION = 'Сообщение "{}"\n{}: '
+NOTIFICATION = 'Сообщение "{}"\n{}  '
 """ 1{} event title 2{} user_fullname(sender)"""

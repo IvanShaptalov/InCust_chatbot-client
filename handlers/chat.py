@@ -56,6 +56,7 @@ async def show_event(message: types.Message, state: FSMContext):
                 return
 
 
+# region data sending
 async def send_text_message(message: types.Message, state: FSMContext):  # create class to send all type of data
     async with state.proxy() as data:
         event_id = int(data['event_id'])
@@ -70,3 +71,52 @@ async def send_location(message: types.Message, state: FSMContext):
         sender = messenger.LocationSender(event_id=event_id,
                                           sender_id=message.chat.id)
         await sender.forward_data(message)
+
+
+async def send_sticker(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        event_id = int(data['event_id'])
+        sender = messenger.StickerSender(event_id=event_id,
+                                         sender_id=message.chat.id)
+        await sender.forward_data(message)
+
+
+async def send_photo(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        event_id = int(data['event_id'])
+        sender = messenger.PhotoSender(event_id=event_id,
+                                       sender_id=message.chat.id)
+        await sender.forward_data(message)
+
+
+async def send_animation(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        event_id = int(data['event_id'])
+        sender = messenger.AnimationSender(event_id=event_id,
+                                           sender_id=message.chat.id)
+        await sender.forward_data(message)
+
+
+async def send_video(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        event_id = int(data['event_id'])
+        sender = messenger.VideoSender(event_id=event_id,
+                                       sender_id=message.chat.id)
+        await sender.forward_data(message)
+
+
+async def send_audio(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        event_id = int(data['event_id'])
+        sender = messenger.AudioSender(event_id=event_id,
+                                       sender_id=message.chat.id)
+        await sender.forward_data(message)
+
+
+async def send_voice(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        event_id = int(data['event_id'])
+        sender = messenger.VoiceSender(event_id=event_id,
+                                       sender_id=message.chat.id)
+        await sender.forward_data(message)
+# endregion data sending

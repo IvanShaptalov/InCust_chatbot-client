@@ -1,4 +1,5 @@
 import logging
+import os
 from abc import abstractmethod
 from copy import copy
 
@@ -47,9 +48,6 @@ class BaseSender:
 
 
 class TextSender(BaseSender):
-    def __init__(self, event_id, sender_id):
-        super().__init__(event_id, sender_id)
-
     async def forward_data(self, data: types.Message):
         user_in_service_bot = False
         with client_bot.with_token(config.SERVICE_BOT_TOKEN):
@@ -71,16 +69,11 @@ class TextSender(BaseSender):
 
 
 class LocationSender(BaseSender):
-    def __init__(self, event_id, sender_id):
-        super().__init__(event_id, sender_id)
-
     async def forward_data(self, data: types.Message):
         user_in_service_bot = False
         with client_bot.with_token(config.SERVICE_BOT_TOKEN):
             chat_id = self.get_owner().chat_id
-            markup = None
-            if not filters.filters.user_in_chat(chat_id):
-                markup = keyboards.reply.r_snippets.main_menu()
+            markup = keyboards.i_snippets.in_chat_inline_keyboard(event_id=self.event_id, chat_id=chat_id)
 
             text = "{}".format(self.prepare_to_send())
             try:
@@ -90,6 +83,148 @@ class LocationSender(BaseSender):
                 await client_bot.send_location(chat_id=chat_id,
                                                latitude=data.location.latitude,
                                                longitude=data.location.longitude)
+                user_in_service_bot = True
+            except Exception as e:
+                logging.warning(e, 'not register in bot')
+        if not user_in_service_bot:
+            await client_bot.send_message(chat_id=self.sender_id,
+                                          text=text_util.LINKER_TO_SERVICE)
+
+
+class StickerSender(BaseSender):
+    async def forward_data(self, data: types.Message):
+        user_in_service_bot = False
+        with client_bot.with_token(config.SERVICE_BOT_TOKEN):
+            chat_id = self.get_owner().chat_id
+            markup = keyboards.i_snippets.in_chat_inline_keyboard(event_id=self.event_id, chat_id=chat_id)
+
+            text = "{}".format(self.prepare_to_send())
+            try:
+                await client_bot.send_message(chat_id=chat_id,
+                                              text=text,
+                                              reply_markup=markup)
+                await client_bot.send_sticker(chat_id=chat_id,
+                                              sticker=data.sticker.file_id)
+                user_in_service_bot = True
+            except Exception as e:
+                logging.warning(e, 'not register in bot')
+        if not user_in_service_bot:
+            await client_bot.send_message(chat_id=self.sender_id,
+                                          text=text_util.LINKER_TO_SERVICE)
+
+
+class PhotoSender(BaseSender):
+    async def forward_data(self, data: types.Message):
+        user_in_service_bot = False
+        path = os.path.join(config.media_path, 'tmp_photo')
+        photo = await data.photo[0].download(destination_file=path)
+        with client_bot.with_token(config.SERVICE_BOT_TOKEN):
+            chat_id = self.get_owner().chat_id
+            markup = keyboards.i_snippets.in_chat_inline_keyboard(event_id=self.event_id, chat_id=chat_id)
+
+            text = "{}".format(self.prepare_to_send())
+            try:
+                await client_bot.send_message(chat_id=chat_id,
+                                              text=text,
+                                              reply_markup=markup)
+                await client_bot.send_photo(chat_id=chat_id,
+                                            photo=open(path, 'rb'))
+                user_in_service_bot = True
+            except Exception as e:
+                logging.warning(e, 'not register in bot')
+        if not user_in_service_bot:
+            await client_bot.send_message(chat_id=self.sender_id,
+                                          text=text_util.LINKER_TO_SERVICE)
+
+
+class AnimationSender(BaseSender):
+    async def forward_data(self, data: types.Message):
+        user_in_service_bot = False
+        path = os.path.join(config.media_path, 'animation.gif')
+        photo = await data.animation.download(destination_file=path)
+        with client_bot.with_token(config.SERVICE_BOT_TOKEN):
+            chat_id = self.get_owner().chat_id
+            markup = keyboards.i_snippets.in_chat_inline_keyboard(event_id=self.event_id, chat_id=chat_id)
+
+            text = "{}".format(self.prepare_to_send())
+            try:
+                await client_bot.send_message(chat_id=chat_id,
+                                              text=text,
+                                              reply_markup=markup)
+                await client_bot.send_animation(chat_id=chat_id,
+                                                animation=open(path, 'rb'))
+                user_in_service_bot = True
+            except Exception as e:
+                logging.warning(e, 'not register in bot')
+        if not user_in_service_bot:
+            await client_bot.send_message(chat_id=self.sender_id,
+                                          text=text_util.LINKER_TO_SERVICE)
+
+
+class VideoSender(BaseSender):
+    async def forward_data(self, data):
+        user_in_service_bot = False
+        path = os.path.join(config.media_path, 'video.mp4')
+        photo = await data.video.download(destination_file=path)
+        with client_bot.with_token(config.SERVICE_BOT_TOKEN):
+            chat_id = self.get_owner().chat_id
+            markup = keyboards.i_snippets.in_chat_inline_keyboard(event_id=self.event_id, chat_id=chat_id)
+
+            text = "{}".format(self.prepare_to_send())
+            try:
+                await client_bot.send_message(chat_id=chat_id,
+                                              text=text,
+                                              reply_markup=markup)
+                await client_bot.send_video(chat_id=chat_id,
+                                            video=open(path, 'rb'))
+                user_in_service_bot = True
+            except Exception as e:
+                logging.warning(e, 'not register in bot')
+        if not user_in_service_bot:
+            await client_bot.send_message(chat_id=self.sender_id,
+                                          text=text_util.LINKER_TO_SERVICE)
+
+
+class AudioSender(BaseSender):
+    async def forward_data(self, data):
+        user_in_service_bot = False
+        path = os.path.join(config.media_path, 'audio.mp3')
+        photo = await data.audio.download(destination_file=path)
+        with client_bot.with_token(config.SERVICE_BOT_TOKEN):
+            chat_id = self.get_owner().chat_id
+            markup = keyboards.i_snippets.in_chat_inline_keyboard(event_id=self.event_id, chat_id=chat_id)
+
+            text = "{}".format(self.prepare_to_send())
+            try:
+                await client_bot.send_message(chat_id=chat_id,
+                                              text=text,
+                                              reply_markup=markup)
+                await client_bot.send_audio(chat_id=chat_id,
+                                            audio=open(path, 'rb'))
+                user_in_service_bot = True
+            except Exception as e:
+                logging.warning(e, 'not register in bot')
+        if not user_in_service_bot:
+            await client_bot.send_message(chat_id=self.sender_id,
+                                          text=text_util.LINKER_TO_SERVICE)
+
+
+class VoiceSender(BaseSender):
+    async def forward_data(self, data):
+        user_in_service_bot = False
+        path = os.path.join(config.media_path, 'voice.ogg')
+        photo = await data.voice.download(destination_file=path)
+        with client_bot.with_token(config.SERVICE_BOT_TOKEN):
+            chat_id = self.get_owner().chat_id
+            markup = keyboards.i_snippets.in_chat_inline_keyboard(event_id=self.event_id, chat_id=chat_id)
+
+            text = "{}".format(self.prepare_to_send())
+            try:
+                await client_bot.send_message(chat_id=chat_id,
+                                              text=text,
+                                              reply_markup=markup)
+                await client_bot.send_voice(chat_id=chat_id,
+                                            voice=open(path, 'rb'))
                 user_in_service_bot = True
             except Exception as e:
                 logging.warning(e, 'not register in bot')

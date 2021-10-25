@@ -57,4 +57,10 @@ def setup(dp: Dispatcher):
     # chat content sending
     dp.register_message_handler(chat.send_text_message, content_types=['text'], state=CatalogGroup.in_chat)
     dp.register_message_handler(chat.send_location, content_types=['location'], state=CatalogGroup.in_chat)
+    dp.register_message_handler(chat.send_sticker, content_types=['sticker'], state=CatalogGroup.in_chat)
+    dp.register_message_handler(chat.send_photo, content_types=['photo'], state=CatalogGroup.in_chat)
+    dp.register_message_handler(chat.send_animation, content_types=['animation'], state=CatalogGroup.in_chat)
+    dp.register_message_handler(chat.send_audio, content_types=['audio'], state=CatalogGroup.in_chat)
+    dp.register_message_handler(chat.send_video, content_types=['video'], state=CatalogGroup.in_chat)
+    dp.register_message_handler(chat.send_voice, content_types=['voice'], state=CatalogGroup.in_chat)
     # service_bot
