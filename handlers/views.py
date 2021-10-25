@@ -1,4 +1,3 @@
-import json
 from aiogram import types
 from icecream import ic
 from data import text_util
@@ -7,6 +6,7 @@ from data.bot_setup import client_bot
 
 # region server views
 from utils import useful_methods
+
 
 # region bot start
 

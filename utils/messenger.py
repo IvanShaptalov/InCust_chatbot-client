@@ -2,6 +2,8 @@ import logging
 from abc import abstractmethod
 from copy import copy
 
+from aiogram import types
+
 import filters.filters
 import keyboards.reply.r_snippets
 from data import text_util, config
@@ -48,18 +50,46 @@ class TextSender(BaseSender):
     def __init__(self, event_id, sender_id):
         super().__init__(event_id, sender_id)
 
-    async def forward_data(self, data):
+    async def forward_data(self, data: types.Message):
         user_in_service_bot = False
         with client_bot.with_token(config.SERVICE_BOT_TOKEN):
             chat_id = self.get_owner().chat_id
             markup = None
             if not filters.filters.user_in_chat(chat_id):
                 markup = keyboards.reply.r_snippets.main_menu()
-            text = "{} {}".format(self.prepare_to_send(), data)
+            text = "{} {}".format(self.prepare_to_send(), data.text)
             try:
                 await client_bot.send_message(chat_id=chat_id,
                                               text=text,
                                               reply_markup=markup)
+                user_in_service_bot = True
+            except Exception as e:
+                logging.warning(e, 'not register in bot')
+        if not user_in_service_bot:
+            await client_bot.send_message(chat_id=self.sender_id,
+                                          text=text_util.LINKER_TO_SERVICE)
+
+
+class LocationSender(BaseSender):
+    def __init__(self, event_id, sender_id):
+        super().__init__(event_id, sender_id)
+
+    async def forward_data(self, data: types.Message):
+        user_in_service_bot = False
+        with client_bot.with_token(config.SERVICE_BOT_TOKEN):
+            chat_id = self.get_owner().chat_id
+            markup = None
+            if not filters.filters.user_in_chat(chat_id):
+                markup = keyboards.reply.r_snippets.main_menu()
+
+            text = "{}".format(self.prepare_to_send())
+            try:
+                await client_bot.send_message(chat_id=chat_id,
+                                              text=text,
+                                              reply_markup=markup)
+                await client_bot.send_location(chat_id=chat_id,
+                                               latitude=data.location.latitude,
+                                               longitude=data.location.longitude)
                 user_in_service_bot = True
             except Exception as e:
                 logging.warning(e, 'not register in bot')

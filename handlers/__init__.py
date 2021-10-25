@@ -8,7 +8,6 @@ from . import add_event
 from . import catalog
 from . import chat
 from . import views
-from . import service_bot
 
 
 def setup(dp: Dispatcher):
@@ -40,7 +39,7 @@ def setup(dp: Dispatcher):
     dp.register_message_handler(add_event.handle_event_title, state=EventForm.event_title)
 
     dp.register_message_handler(add_event.handle_text_length_smaller_3, lambda message: len(message.text) <= 3,
-                                state=EventForm.event_title)
+                                state=EventForm.description)
     dp.register_message_handler(add_event.handle_description, state=EventForm.description)
 
     dp.register_message_handler(add_event.handle_invalid_photo,
@@ -57,4 +56,5 @@ def setup(dp: Dispatcher):
     dp.register_message_handler(chat.show_event, Text(equals=config.SHOW_EVENT_IN_CHAT), state=CatalogGroup.in_chat)
     # chat content sending
     dp.register_message_handler(chat.send_text_message, content_types=['text'], state=CatalogGroup.in_chat)
+    dp.register_message_handler(chat.send_location, content_types=['location'], state=CatalogGroup.in_chat)
     # service_bot

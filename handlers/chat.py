@@ -61,4 +61,12 @@ async def send_text_message(message: types.Message, state: FSMContext):  # creat
         event_id = int(data['event_id'])
         sender = messenger.TextSender(event_id=event_id,
                                       sender_id=message.chat.id)
-        await sender.forward_data(message.text)
+        await sender.forward_data(message)
+
+
+async def send_location(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        event_id = int(data['event_id'])
+        sender = messenger.LocationSender(event_id=event_id,
+                                          sender_id=message.chat.id)
+        await sender.forward_data(message)
