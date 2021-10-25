@@ -13,16 +13,17 @@ def sure_inline_keyboard(event_id: int) -> types.InlineKeyboardButton:
     )
 
 
-def in_chat_inline_keyboard(event_id: int, chat_id: str) -> types.InlineKeyboardButton:
+def in_chat_inline_keyboard(event_id: int, sender_chat_id: str, receiver_chat_id: str) -> types.InlineKeyboardButton:
     """
     send inline keyboard if user not in chat
     :param event_id: event id
-    :param chat_id: telegram user chat id
+    :param sender_chat_id: chat id of sender
+    :param receiver_chat_id: chat id of owner event
     :return: types.InlineKeyboardButton
     """
-    if not filters.filters.user_in_chat(chat_id, 'service'):
+    if not filters.filters.user_in_chat(receiver_chat_id, 'service'):
         return types.InlineKeyboardMarkup(). \
             add(
-            inline_button(config.EVENT_ANSWER, f'{config.CONNECT_TO_CHAT}:{event_id}:{chat_id}'),
+            inline_button(config.EVENT_ANSWER, f'{config.CONNECT_TO_CHAT}:{event_id}:{sender_chat_id}'),
             inline_button(config.SHOW_EVENT_IN_CHAT, f'{config.SHOW_EVENT_MARKER}:{event_id}')
         )

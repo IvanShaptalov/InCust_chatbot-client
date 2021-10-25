@@ -16,7 +16,7 @@ def setup(dp: Dispatcher):
                                 lambda message: message.text == config.START or message.text == config.MAIN_MENU)
 
     # catalog
-    dp.register_message_handler(catalog.handle_catalog_menu, lambda message: message.text in config.CATALOG, state='*')
+    dp.register_message_handler(catalog.handle_catalog_menu, Text(equals=config.CATALOG), state='*')
     dp.register_callback_query_handler(catalog.handle_sure_to_delete_callback,
                                        lambda callback: config.DELETE_EVENT in callback.data, state='*')
     dp.register_callback_query_handler(catalog.handle_delete_answer,
@@ -26,7 +26,7 @@ def setup(dp: Dispatcher):
                                        lambda callback: config.ADD_EVENTS_PAGINATOR in callback.data, state='*')
 
     # add_event
-    dp.register_message_handler(add_event.handle_add_event, lambda message: message.text in config.ADD_EVENT, state='*')
+    dp.register_message_handler(add_event.handle_add_event, Text(equals=config.ADD_EVENT), state='*')
 
     dp.register_message_handler(add_event.cancel_handler, Text(equals=config.MAIN_MENU, ignore_case=True), state='*')
 

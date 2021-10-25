@@ -19,6 +19,11 @@ class BaseSender:
         self.event, self._owner = self._get_event()
         self.sender = self._get_sender()
 
+    def get_answer_markup(self):
+        return keyboards.i_snippets.in_chat_inline_keyboard(event_id=self.event_id,
+                                                            receiver_chat_id=self.get_owner().chat_id,
+                                                            sender_chat_id=self.sender_id)
+
     def get_owner(self) -> db.User:
         return self._owner
 
@@ -51,13 +56,12 @@ class TextSender(BaseSender):
         user_in_service_bot = False
         with client_bot.with_token(config.SERVICE_BOT_TOKEN):
             chat_id = self.get_owner().chat_id
-            markup = keyboards.i_snippets.in_chat_inline_keyboard(event_id=self.event_id, chat_id=chat_id)
 
             text = "{} {}".format(self.prepare_to_send(), data.text)
             try:
                 await client_bot.send_message(chat_id=chat_id,
                                               text=text,
-                                              reply_markup=markup)
+                                              reply_markup=self.get_answer_markup())
                 user_in_service_bot = True
             except Exception as e:
                 logging.warning(e, 'not register in bot')
@@ -71,13 +75,12 @@ class LocationSender(BaseSender):
         user_in_service_bot = False
         with client_bot.with_token(config.SERVICE_BOT_TOKEN):
             chat_id = self.get_owner().chat_id
-            markup = keyboards.i_snippets.in_chat_inline_keyboard(event_id=self.event_id, chat_id=chat_id)
 
             text = "{}".format(self.prepare_to_send())
             try:
                 await client_bot.send_message(chat_id=chat_id,
                                               text=text,
-                                              reply_markup=markup)
+                                              reply_markup=self.get_answer_markup())
                 await client_bot.send_location(chat_id=chat_id,
                                                latitude=data.location.latitude,
                                                longitude=data.location.longitude)
@@ -94,13 +97,12 @@ class StickerSender(BaseSender):
         user_in_service_bot = False
         with client_bot.with_token(config.SERVICE_BOT_TOKEN):
             chat_id = self.get_owner().chat_id
-            markup = keyboards.i_snippets.in_chat_inline_keyboard(event_id=self.event_id, chat_id=chat_id)
 
             text = "{}".format(self.prepare_to_send())
             try:
                 await client_bot.send_message(chat_id=chat_id,
                                               text=text,
-                                              reply_markup=markup)
+                                              reply_markup=self.get_answer_markup())
                 await client_bot.send_sticker(chat_id=chat_id,
                                               sticker=data.sticker.file_id)
                 user_in_service_bot = True
@@ -118,13 +120,12 @@ class PhotoSender(BaseSender):
         photo = await data.photo[0].download(destination_file=path)
         with client_bot.with_token(config.SERVICE_BOT_TOKEN):
             chat_id = self.get_owner().chat_id
-            markup = keyboards.i_snippets.in_chat_inline_keyboard(event_id=self.event_id, chat_id=chat_id)
 
             text = "{}".format(self.prepare_to_send())
             try:
                 await client_bot.send_message(chat_id=chat_id,
                                               text=text,
-                                              reply_markup=markup)
+                                              reply_markup=self.get_answer_markup())
                 await client_bot.send_photo(chat_id=chat_id,
                                             photo=open(path, 'rb'))
                 user_in_service_bot = True
@@ -142,13 +143,12 @@ class AnimationSender(BaseSender):
         photo = await data.animation.download(destination_file=path)
         with client_bot.with_token(config.SERVICE_BOT_TOKEN):
             chat_id = self.get_owner().chat_id
-            markup = keyboards.i_snippets.in_chat_inline_keyboard(event_id=self.event_id, chat_id=chat_id)
 
             text = "{}".format(self.prepare_to_send())
             try:
                 await client_bot.send_message(chat_id=chat_id,
                                               text=text,
-                                              reply_markup=markup)
+                                              reply_markup=self.get_answer_markup())
                 await client_bot.send_animation(chat_id=chat_id,
                                                 animation=open(path, 'rb'))
                 user_in_service_bot = True
@@ -166,13 +166,12 @@ class VideoSender(BaseSender):
         photo = await data.video.download(destination_file=path)
         with client_bot.with_token(config.SERVICE_BOT_TOKEN):
             chat_id = self.get_owner().chat_id
-            markup = keyboards.i_snippets.in_chat_inline_keyboard(event_id=self.event_id, chat_id=chat_id)
 
             text = "{}".format(self.prepare_to_send())
             try:
                 await client_bot.send_message(chat_id=chat_id,
                                               text=text,
-                                              reply_markup=markup)
+                                              reply_markup=self.get_answer_markup())
                 await client_bot.send_video(chat_id=chat_id,
                                             video=open(path, 'rb'))
                 user_in_service_bot = True
@@ -190,13 +189,12 @@ class AudioSender(BaseSender):
         photo = await data.audio.download(destination_file=path)
         with client_bot.with_token(config.SERVICE_BOT_TOKEN):
             chat_id = self.get_owner().chat_id
-            markup = keyboards.i_snippets.in_chat_inline_keyboard(event_id=self.event_id, chat_id=chat_id)
 
             text = "{}".format(self.prepare_to_send())
             try:
                 await client_bot.send_message(chat_id=chat_id,
                                               text=text,
-                                              reply_markup=markup)
+                                              reply_markup=self.get_answer_markup())
                 await client_bot.send_audio(chat_id=chat_id,
                                             audio=open(path, 'rb'))
                 user_in_service_bot = True
@@ -214,13 +212,12 @@ class VoiceSender(BaseSender):
         photo = await data.voice.download(destination_file=path)
         with client_bot.with_token(config.SERVICE_BOT_TOKEN):
             chat_id = self.get_owner().chat_id
-            markup = keyboards.i_snippets.in_chat_inline_keyboard(event_id=self.event_id, chat_id=chat_id)
 
             text = "{}".format(self.prepare_to_send())
             try:
                 await client_bot.send_message(chat_id=chat_id,
                                               text=text,
-                                              reply_markup=markup)
+                                              reply_markup=self.get_answer_markup())
                 await client_bot.send_voice(chat_id=chat_id,
                                             voice=open(path, 'rb'))
                 user_in_service_bot = True
