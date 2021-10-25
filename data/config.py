@@ -48,6 +48,8 @@ CATALOG = 'Каталог'
 ADD_EVENT = 'Добавить событие'
 SKIP = 'Оставить поле пустым'
 EXIT_FROM_CHAT = 'Выйти из чата'
+# chat
+EVENT_ANSWER = 'Ответить'
 SHOW_EVENT_IN_CHAT = 'Посмотреть событие'
 
 # Sure check
@@ -62,5 +64,7 @@ date_format_human = 'Год-месяц-день'
 ADD_EVENTS_PAGINATOR = 'add'
 DELETE_EVENT = 'delete'
 CONNECT_TO_CHAT = 'connect'
+SHOW_EVENT_MARKER = 'show_event'
+
 
 

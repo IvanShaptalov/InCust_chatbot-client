@@ -3,6 +3,8 @@ import datetime
 from aiogram import types, Bot
 from aiogram.types import PhotoSize
 
+from models import db
+
 
 def get_full_user_name(message: types.Message) -> str:
     """get user fullname from message"""
@@ -14,6 +16,13 @@ def get_full_user_name(message: types.Message) -> str:
         return f'{first_name} {last_name}'
     else:
         return ''
+
+
+def get_event(callback):
+    event_id = get_id_from_data(callback.data, 1)
+    event = db.get_from_db_multiple_filter(db.Event, [db.Event.id == event_id])
+    if isinstance(event, db.Event):
+        return event
 
 
 def retrieve_message_unique_id(message: types.Message, bot: Bot):

@@ -141,7 +141,7 @@ async def save_state_info(message: types.Message, state: FSMContext):
         user = db.User()
         user.chat_id = message.chat.id
         user.user_fullname = useful_methods.get_full_user_name(message)
-        user.in_chat = filters.user_in_chat(message.chat.id)
+        user.in_chat_client = filters.user_in_chat(message.chat.id)
 
         event = db.Event()
         event.ev_name = event_name

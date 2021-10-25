@@ -1,6 +1,5 @@
 import pytest
 
-from tests import conftest
 from utils import messenger
 
 base_sender = None

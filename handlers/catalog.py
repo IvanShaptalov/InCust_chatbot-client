@@ -64,6 +64,18 @@ async def handle_sure_to_delete_callback(callback: types.CallbackQuery):
         await callback.message.reply(text_util.EVENT_DELETED,
                                      reply_markup=keyboards.r_snippets.main_menu())
 
-# endregion delete event
 
+# endregion delete event
+async def show_event(callback: types.CallbackQuery):
+    print(callback.data)
+    event = useful_methods.get_event(callback)
+    chat_id = callback.message.chat.id
+    if isinstance(event, db.Event):
+        await client_bot.send_photo(chat_id=chat_id,
+                                    photo=event.get_media(),
+                                    caption=f'{event.stringify()}')
+    else:
+        await client_bot.send_message(chat_id,
+                                      text_util.EVENT_DELETED)
+    # todonow send deep link
 # endregion catalog

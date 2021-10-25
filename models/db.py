@@ -44,11 +44,12 @@ class User(Base):
 
     chat_id = Column('chat_id', BigInteger, unique=True, primary_key=True, index=True)
     user_fullname = Column('username', String, unique=False)
-    in_chat = Column('in_chat', Boolean, unique=False, default=False)
+    in_chat_client = Column('in_chat_client', Boolean, unique=False, default=False)
+    in_chat_service = Column('in_chat_service', Boolean, unique=False, default=False)
     event = relationship('Event', back_populates='event_owner')
 
     def __str__(self):
-        return f'{self.user_fullname} {self.chat_id} in_chat:{self.in_chat}'
+        return f'{self.user_fullname} {self.chat_id} in_chat_client:{self.in_chat_client}, in_chat_service: {self.in_chat_service}'
 
     def save(self):
         user = get_from_db_multiple_filter(User,
@@ -60,15 +61,34 @@ class User(Base):
                                           identifier_to_value=[User.chat_id == self.chat_id],
                                           chat_id=self.chat_id,
                                           user_fullname=self.user_fullname,
-                                          in_chat=self.in_chat)
+                                          in_chat_client=self.in_chat_client,
+                                          in_chat_service=self.in_chat_service)
 
     @staticmethod
-    def set_in_chat(chat_id, in_chat: bool):
+    def set_in_chat(chat_id, in_chat: bool, service_or_client: str = 'client'):
+        """
+        set user in chat
+        :param chat_id: user chat id
+        :param in_chat: set True if user enter in chat
+        :param service_or_client: select chat, 'service' to service, 'client' to client
+        :return:
+        """
+        client = 'client'
+        service = 'service'
+        assert service_or_client == client or service_or_client == service
+
         with session:
-            edit_obj_in_table(session_p=session,
-                              table_class=User,
-                              identifier_to_value=[User.chat_id == chat_id],
-                              in_chat=in_chat)
+            if service_or_client == service:
+                edit_obj_in_table(session_p=session,
+                                  table_class=User,
+                                  identifier_to_value=[User.chat_id == chat_id],
+                                  in_chat_service=in_chat)
+                return
+            elif service_or_client == client:
+                edit_obj_in_table(session_p=session,
+                                  table_class=User,
+                                  identifier_to_value=[User.chat_id == chat_id],
+                                  in_chat_client=in_chat)
 
 
 class Event(Base):
@@ -303,6 +323,8 @@ def get_by_max(table_class, column):
     # work on func min
     with session:
         max_id = session.query(func.max(column)).scalar()
+        if not isinstance(max_id, int):
+            max_id = 0
         assert isinstance(max_id, int)
         row = session.query(table_class).filter(column == max_id).first()
         # row = session.query(table_class).filter(func.max(column)).first()

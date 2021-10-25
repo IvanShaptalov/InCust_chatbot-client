@@ -51,7 +51,8 @@ def setup(dp: Dispatcher):
     # chat
     dp.register_callback_query_handler(chat.handle_chat_connect,
                                        lambda callback: config.CONNECT_TO_CHAT in callback.data,
-                                       state=CatalogGroup.catalog_menu)
+                                       state='*')
+
     dp.register_message_handler(chat.leave_chat, Text(equals=config.EXIT_FROM_CHAT), state='*')
     dp.register_message_handler(chat.show_event, Text(equals=config.SHOW_EVENT_IN_CHAT), state=CatalogGroup.in_chat)
     # chat content sending
@@ -63,4 +64,7 @@ def setup(dp: Dispatcher):
     dp.register_message_handler(chat.send_audio, content_types=['audio'], state=CatalogGroup.in_chat)
     dp.register_message_handler(chat.send_video, content_types=['video'], state=CatalogGroup.in_chat)
     dp.register_message_handler(chat.send_voice, content_types=['voice'], state=CatalogGroup.in_chat)
+
+    dp.register_callback_query_handler(catalog.show_event, lambda callback: config.SHOW_EVENT_MARKER in callback.data, state='*')
+
     # service_bot

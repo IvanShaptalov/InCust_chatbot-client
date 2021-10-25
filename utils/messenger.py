@@ -5,7 +5,6 @@ from copy import copy
 
 from aiogram import types
 
-import filters.filters
 import keyboards.reply.r_snippets
 from data import text_util, config
 from data.bot_setup import client_bot
@@ -52,9 +51,8 @@ class TextSender(BaseSender):
         user_in_service_bot = False
         with client_bot.with_token(config.SERVICE_BOT_TOKEN):
             chat_id = self.get_owner().chat_id
-            markup = None
-            if not filters.filters.user_in_chat(chat_id):
-                markup = keyboards.reply.r_snippets.main_menu()
+            markup = keyboards.i_snippets.in_chat_inline_keyboard(event_id=self.event_id, chat_id=chat_id)
+
             text = "{} {}".format(self.prepare_to_send(), data.text)
             try:
                 await client_bot.send_message(chat_id=chat_id,
