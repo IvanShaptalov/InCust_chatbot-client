@@ -117,7 +117,7 @@ class PhotoSender(BaseSender):
     async def forward_data(self, data: types.Message):
         user_in_service_bot = False
         path = os.path.join(config.media_path, 'tmp_photo')
-        photo = await data.photo[0].download(destination_file=path)
+        photo = await data.photo[-1].download(destination_file=path)
         with client_bot.with_token(config.SERVICE_BOT_TOKEN):
             chat_id = self.get_owner().chat_id
 

@@ -15,7 +15,7 @@ config.read(os.path.join(base_dir, "config.ini"))
 # solved create database in heroku
 
 def database_link():
-    pre_database_url = os.environ.get('DATABASE_URL') or config['Database']['url']
+    pre_database_url = os.environ.get('DATABASE_URL') or config['DataBase']['url']
     if pre_database_url is None:
         return None
     print('database: ', pre_database_url)
