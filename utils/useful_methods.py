@@ -54,3 +54,26 @@ def get_id_from_data(data: str, index):
     """
     assert ':' in data
     return data.split(':')[index]
+
+
+def format_hast(first_chat_id, second_chat_id, event_id):
+    """generate chat_hash"""
+    return f"{first_chat_id}-{second_chat_id}-{event_id}"
+
+
+def check_hash_valid(chat_hash1, chat_hash2):
+    """
+    check if two users in one chat
+    chat hash consist 1 chat id, 2 chat id and event id
+    :param chat_hash1: chat_id of first user
+    :param chat_hash2: chat_id of second user
+    :return:
+    """
+    if chat_hash1 is None or chat_hash2 is None:
+        return False
+    chat11, chat12, event_id1 = chat_hash1.split('-')
+    chat21, chat22, event_id2 = chat_hash2.split('-')
+
+    in_chat = sorted([chat11, chat12]) == sorted([chat21, chat22]) and event_id1 == event_id2
+    return in_chat
+

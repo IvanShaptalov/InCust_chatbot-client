@@ -18,30 +18,29 @@ async def handle_chat_connect(callback: types.CallbackQuery, state: FSMContext):
             event = db.get_from_db_multiple_filter(table_class=db.Event,
                                                    identifier_to_value=[db.Event.id == event_id],
                                                    open_session=db.session)
-            db.session.close()
             if isinstance(event, db.Event):
                 await state.update_data(event_id=event_id)
                 await CatalogGroup.in_chat.set()
+                chat_id = callback.message.chat.id
 
-                db.User.set_in_chat(chat_id=callback.message.chat.id,
-                                    in_chat=True,
-                                    service_or_client='client',
-                                    chat_event_id=event_id)
+                chat_hash = useful_methods.format_hast(first_chat_id=event.event_owner.chat_id,
+                                                       second_chat_id=chat_id,
+                                                       event_id=event_id)
+                db.session.close()
+                db.User.set_in_chat(chat_id=chat_id,
+                                    chat_hash=chat_hash)
                 await callback.message.reply(text_util.ENTER_IN_CHAT.format(event.title),
                                              reply_markup=keyboards.r_snippets.exit_from_chat_or_show_event())
 
             else:
                 await callback.message.reply(text_util.EVENT_DELETED)
                 return
-    pass
 
 
 async def leave_chat(message: types.Message, state: FSMContext):
     await state.finish()
     db.User.set_in_chat(chat_id=message.chat.id,
-                        in_chat=False,
-                        service_or_client='client',
-                        chat_event_id=None)
+                        chat_hash=None)
     await views.handle_start(message)
 
 

@@ -1,7 +1,7 @@
 import logging
 from typing import List
 from icecream import ic
-from sqlalchemy import Column, String, create_engine, BigInteger, DateTime, Boolean, ForeignKey, func
+from sqlalchemy import Column, String, create_engine, BigInteger, DateTime, ForeignKey, func
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 
@@ -44,10 +44,7 @@ class User(Base):
 
     chat_id = Column('chat_id', BigInteger, unique=True, primary_key=True, index=True)
     user_fullname = Column('username', String, unique=False)
-    in_chat_client = Column('in_chat_client', Boolean, unique=False, default=False)
-    in_chat_service = Column('in_chat_service', Boolean, unique=False, default=False)
-    current_event_id = Column('current_event_id', BigInteger, unique=False, default=None, nullable=True)
-
+    chat_hash = Column('chat_hash', String, unique=False, default=None)
     event = relationship('Event', back_populates='event_owner')
 
     def __str__(self):
@@ -67,32 +64,17 @@ class User(Base):
                                           in_chat_service=self.in_chat_service)
 
     @staticmethod
-    def set_in_chat(chat_id, in_chat: bool, chat_event_id=None, service_or_client: str = 'client'):
+    def set_in_chat(chat_id, chat_hash):
         """
         set user in chat
-        :param chat_id: user chat id
-        :param in_chat: set True if user enter in chat
-        :param chat_event_id: current event id
-        :param service_or_client: select chat, 'service' to service, 'client' to client
+        :param chat_id: user chat i
+        :param chat_hash: hash include two chat id, if two chat hashes is equals, users in chat
         :return:
         """
-        client = 'client'
-        service = 'service'
-        assert service_or_client == client or service_or_client == service
-        with session:
-            if service_or_client == service:
-                edit_obj_in_table(session_p=session,
-                                  table_class=User,
-                                  identifier_to_value=[User.chat_id == chat_id],
-                                  in_chat_service=in_chat,
-                                  current_event_id=chat_event_id)
-            elif service_or_client == client:
-
-                edit_obj_in_table(session_p=session,
-                                  table_class=User,
-                                  identifier_to_value=[User.chat_id == chat_id],
-                                  in_chat_client=in_chat,
-                                  current_event_id=chat_event_id)
+        write_obj_to_table(session_p=session,
+                           table_class=User,
+                           identifier_to_value=[User.chat_id == chat_id],
+                           chat_hash=chat_hash)
 
 
 class Event(Base):

@@ -9,7 +9,6 @@ from data.bot_setup import client_bot
 
 import states
 import keyboards
-from filters import filters
 from handlers import views
 from keyboards.reply.r_snippets import go_to_main_menu
 from utils import useful_methods
