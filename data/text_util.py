@@ -48,3 +48,5 @@ ENTER_IN_CHAT = 'Вы вошли в чат с владельцем событи�
 
 NOTIFICATION = 'Сообщение "{}"\n{}  '
 """ 1{} event title 2{} user_fullname(sender)"""
+
+CATALOG_EMPTY = 'Каталог пуст'

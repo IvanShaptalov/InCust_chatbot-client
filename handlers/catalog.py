@@ -17,18 +17,22 @@ async def handle_catalog_menu(message: types.Message):
     ic('show catalog statement')
     await states.client.CatalogGroup.catalog_menu.set()
     event = db.get_by_max(db.Event, db.Event.id)
-    await paginator.show_catalog_page(chat_id=message.chat.id,
-                                      events=event.get_next_event(event.id, 2),
-                                      bot=client_bot)
+    if isinstance(event, db.Event):
+        await paginator.show_catalog_page(chat_id=message.chat.id,
+                                          events=event.get_next_event(event.id, 2),
+                                          bot=client_bot)
+    else:
+        await message.reply(text_util.CATALOG_EMPTY)
 
 
 async def handle_catalog_callback(callback: types.CallbackQuery):
     event_id = int(useful_methods.get_id_from_data(callback.data, 2))
     additional_events = int(useful_methods.get_id_from_data(callback.data, 1))
     event = db.get_from_db_multiple_filter(db.Event, [db.Event.id == event_id])
-    await paginator.show_catalog_page(chat_id=callback.message.chat.id,
-                                      events=event.get_next_event(event_id, additional_events),
-                                      bot=client_bot)
+    if isinstance(event, db.Event):
+        await paginator.show_catalog_page(chat_id=callback.message.chat.id,
+                                          events=event.get_next_event(event_id, additional_events),
+                                          bot=client_bot)
     await callback.message.delete()
     pass
 

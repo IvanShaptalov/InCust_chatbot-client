@@ -23,7 +23,10 @@ async def handle_chat_connect(callback: types.CallbackQuery, state: FSMContext):
                 await state.update_data(event_id=event_id)
                 await CatalogGroup.in_chat.set()
 
-                db.User.set_in_chat(callback.message.chat.id, True, 'client')
+                db.User.set_in_chat(chat_id=callback.message.chat.id,
+                                    in_chat=True,
+                                    service_or_client='client',
+                                    chat_event_id=event_id)
                 await callback.message.reply(text_util.ENTER_IN_CHAT.format(event.title),
                                              reply_markup=keyboards.r_snippets.exit_from_chat_or_show_event())
 
@@ -35,7 +38,10 @@ async def handle_chat_connect(callback: types.CallbackQuery, state: FSMContext):
 
 async def leave_chat(message: types.Message, state: FSMContext):
     await state.finish()
-    db.User.set_in_chat(message.chat.id, False, 'client')
+    db.User.set_in_chat(chat_id=message.chat.id,
+                        in_chat=False,
+                        service_or_client='client',
+                        chat_event_id=None)
     await views.handle_start(message)
 
 

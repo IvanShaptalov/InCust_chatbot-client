@@ -1,17 +1,21 @@
 from models import db
 
 
-def user_in_chat(chat_id, service_or_client: str = 'client'):
+def user_in_chat_from_client_to_service(receiver_chat_id, sender_chat_id):
     """
+    This filter works from client bot to service where receiver in client bot and sender in service chatbot
+    :param receiver_chat_id: telegram user chat id receiver from client chatbot
+    :param sender_chat_id: sender send info from service bot
+    :return: boolean
 
-    :param chat_id: telegram user chat id
-    :param service_or_client:
-    :return: service_or_client: select chat, 'service' to service, 'client' to client
     """
-    service = 'service'
-    client = 'client'
-    user = db.get_from_db_multiple_filter(db.User, [db.User.chat_id == chat_id])
-    if isinstance(user, db.User):
+    receiver_user = db.get_from_db_multiple_filter(db.User, [db.User.chat_id == receiver_chat_id])
+    sender_user = db.get_from_db_multiple_filter(db.User, [db.User.chat_id == sender_chat_id])
 
-        return user.in_chat_client if service_or_client == client else user.in_chat_service
+    if isinstance(receiver_user, db.User) and isinstance(sender_user, db.User):
+        # dont send keyboard if receiver in chat in service, id's same and sender user in client chat
+        return receiver_user.in_chat_service \
+               and receiver_user.current_event_id == sender_user.current_event_id \
+               and sender_user.in_chat_client
+
     return False

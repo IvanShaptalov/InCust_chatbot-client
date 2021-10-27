@@ -46,6 +46,8 @@ class User(Base):
     user_fullname = Column('username', String, unique=False)
     in_chat_client = Column('in_chat_client', Boolean, unique=False, default=False)
     in_chat_service = Column('in_chat_service', Boolean, unique=False, default=False)
+    current_event_id = Column('current_event_id', BigInteger, unique=False, default=None, nullable=True)
+
     event = relationship('Event', back_populates='event_owner')
 
     def __str__(self):
@@ -65,30 +67,32 @@ class User(Base):
                                           in_chat_service=self.in_chat_service)
 
     @staticmethod
-    def set_in_chat(chat_id, in_chat: bool, service_or_client: str = 'client'):
+    def set_in_chat(chat_id, in_chat: bool, chat_event_id=None, service_or_client: str = 'client'):
         """
         set user in chat
         :param chat_id: user chat id
         :param in_chat: set True if user enter in chat
+        :param chat_event_id: current event id
         :param service_or_client: select chat, 'service' to service, 'client' to client
         :return:
         """
         client = 'client'
         service = 'service'
         assert service_or_client == client or service_or_client == service
-
         with session:
             if service_or_client == service:
                 edit_obj_in_table(session_p=session,
                                   table_class=User,
                                   identifier_to_value=[User.chat_id == chat_id],
-                                  in_chat_service=in_chat)
-                return
+                                  in_chat_service=in_chat,
+                                  current_event_id=chat_event_id)
             elif service_or_client == client:
+
                 edit_obj_in_table(session_p=session,
                                   table_class=User,
                                   identifier_to_value=[User.chat_id == chat_id],
-                                  in_chat_client=in_chat)
+                                  in_chat_client=in_chat,
+                                  current_event_id=chat_event_id)
 
 
 class Event(Base):
